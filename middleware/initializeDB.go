@@ -1,8 +1,10 @@
 package middleware
 
 import (
+	"catalogService/model"
 	"fmt"
 	"log"
+
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -21,6 +23,8 @@ func DatabaseConnection() *gorm.DB {
 		log.Fatal("Error connecting to the database...", err)
 	}
 	fmt.Println("Database connection successful...")
+	db.AutoMigrate(&model.MenuItems{})
+	db.AutoMigrate(&model.Restaurants{})
 	return db
 }
 
