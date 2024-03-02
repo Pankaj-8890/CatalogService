@@ -3,10 +3,11 @@ package model
 import "gorm.io/gorm"
 
 type IServiceDb interface {
-	CreateRestaurant(Restaurants) (RestaurantResponse,error) 
-	// AddMenuItems()
-	// GetRestaurant()
-	// GetMenuItems()
+	CreateRestaurant(Restaurants) (RestaurantResponse, error)
+	AddMenuItems(int, MenuItems) (MenuItem, error)
+	GetRestaurant(int) (Restaurant, error)
+	GetAllRestaurants() ([]Restaurant, error)
+	GetMenuItems(int) (MenuItems, error)
 }
 
 type ServiceDb struct {
@@ -15,7 +16,5 @@ type ServiceDb struct {
 
 
 func NewServiceDb(db *gorm.DB) *ServiceDb {
-	return &ServiceDb{DB: db}	
+	return &ServiceDb{DB: db}
 }
-
-

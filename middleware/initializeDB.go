@@ -23,9 +23,11 @@ func DatabaseConnection() *gorm.DB {
 		log.Fatal("Error connecting to the database...", err)
 	}
 	fmt.Println("Database connection successful...")
+
+	db.Exec("DROP TABLE IF EXISTS restaurants;")
+	db.Exec("DROP TABLE IF EXISTS menu_items;")
+
 	db.AutoMigrate(&model.MenuItems{})
 	db.AutoMigrate(&model.Restaurants{})
 	return db
 }
-
-
