@@ -10,17 +10,17 @@ import (
 
 type Restaurants struct {
 	gorm.Model
-	ID       uint        `json:"ID" gorm:"primaryKey"`
+	ID       int        `json:"ID" gorm:"primaryKey"`
 	Name     string      `json:"name" gorm:"not null"`
 	Location string      `json:"location" gorm:"not null"`
-	Menu     []MenuItems `json:"menu" gorm:"foreignkey:RestaurantsID"`
+	Menu     []MenuItems `json:"menuItems" gorm:"foreignkey:RestaurantsID"`
 }
 
 type Restaurant struct {
-	ID       uint        `json:"ID"`
+	ID       int        `json:"ID"`
 	Name     string      `json:"name"`
 	Location string      `json:"location"`
-	Menu     []MenuItem `json:"menu"`
+	Menu     []MenuItem `json:"menuItems"`
 }
 
 
@@ -61,7 +61,7 @@ func (s *ServiceDb) GetRestaurant(id int) (Restaurant, error) {
 		ID:       restaurant.ID,
 		Name:     restaurant.Name,
 		Location: restaurant.Location,
-		Menu:     convert(restaurant.Menu),
+		Menu:     Convert(restaurant.Menu),
 	}
 
 	if res.Error != nil {
@@ -79,18 +79,13 @@ func (s *ServiceDb) GetAllRestaurants()([]Restaurant, error){
 	if res.Error != nil {
 		return nil, res.Error
 	}
-
-
-	
-
-
 	var convertedRestaurants []Restaurant
 	for _, r := range restaurants {
 		convertedRestaurants = append(convertedRestaurants, Restaurant{
 			ID:       r.ID,
 			Name:     r.Name,
 			Location: r.Location,
-			Menu:     convert(r.Menu),
+			Menu:     Convert(r.Menu),
 		})
 	}
 
@@ -98,7 +93,7 @@ func (s *ServiceDb) GetAllRestaurants()([]Restaurant, error){
 
 }
 
-func convert(menu []MenuItems)([]MenuItem){
+func Convert(menu []MenuItems)([]MenuItem){
 
 	var menuItem []MenuItem
 	for _,m := range menu{

@@ -47,15 +47,15 @@ func InitController(r *mux.Router, serviceDb model.IServiceDb) {
 	app := new(application)
 	app.auth.username = "pankaj"
 	app.auth.password = "1234"
-	r.HandleFunc("/restaurants", app.basicAuth(CreateRestaurant(serviceDb))).Methods("POST")
-	r.HandleFunc("/restaurants/{id}", app.basicAuth(AddMenuItems(serviceDb))).Methods("POST")
-	r.HandleFunc("/restaurants/{id}", app.basicAuth(GetRestaurant(serviceDb))).Methods("GET")
-	r.HandleFunc("/restaurants", app.basicAuth(GetAllRestaurants(serviceDb))).Methods("GET")
-	
+	r.HandleFunc("/restaurants", app.basicAuth(createRestaurant(serviceDb))).Methods("POST")
+	r.HandleFunc("/restaurants/{id}/menu-items", app.basicAuth(createItems(serviceDb))).Methods("POST")
+	r.HandleFunc("/restaurants/{id}", fetchRestaurant(serviceDb)).Methods("GET")
+	r.HandleFunc("/restaurants", fetchAllRestaurants(serviceDb)).Methods("GET")
+	r.HandleFunc("/restaurants/{id}/menu-items", fetchAllItems(serviceDb)).Methods("GET")
 	
 }
 
-func CreateRestaurant(serviceDb model.IServiceDb) func(w http.ResponseWriter, r *http.Request) {
+func createRestaurant(serviceDb model.IServiceDb) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 
@@ -76,7 +76,7 @@ func CreateRestaurant(serviceDb model.IServiceDb) func(w http.ResponseWriter, r 
 }
 
 
-func GetRestaurant(serviceDb model.IServiceDb) func(w http.ResponseWriter, r *http.Request) {
+func fetchRestaurant(serviceDb model.IServiceDb) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 
@@ -102,7 +102,7 @@ func GetRestaurant(serviceDb model.IServiceDb) func(w http.ResponseWriter, r *ht
 	}
 }
 
-func AddMenuItems(serviceDb model.IServiceDb) func(w http.ResponseWriter, r *http.Request) {
+func createItems(serviceDb model.IServiceDb) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 
@@ -129,7 +129,9 @@ func AddMenuItems(serviceDb model.IServiceDb) func(w http.ResponseWriter, r *htt
 	}
 }
 
-func GetAllRestaurants(serviceDb model.IServiceDb) func(w http.ResponseWriter, r *http.Request) {
+
+
+func fetchAllRestaurants(serviceDb model.IServiceDb) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 
@@ -147,3 +149,30 @@ func GetAllRestaurants(serviceDb model.IServiceDb) func(w http.ResponseWriter, r
 
 	}
 }
+
+
+func fetchAllItems(serviceDb model.IServiceDb) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+
+
+		w.Header().Set("Content-Type", "application/json")
+		param := mux.Vars(r)
+
+		userId, err := strconv.Atoi(param["id"])
+		if err != nil {
+			json.NewEncoder(w).Encode("Invalid user ID")
+			return
+		}
+		
+		menuItems,err := serviceDb.GetAllMenuItems(userId)
+
+		if err!=nil{
+			w.WriteHeader(http.StatusBadRequest)
+			json.NewEncoder(w).Encode(err)
+			return
+		}
+		json.NewEncoder(w).Encode(menuItems)
+
+	}
+}
+

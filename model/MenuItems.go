@@ -9,17 +9,17 @@ import (
 
 type MenuItems struct {
 	gorm.Model
-	ID           uint    `json:"ID" gorm:"primaryKey"`
+	ID           int    `json:"ID" gorm:"primaryKey"`
 	Name         string  `json:"name" gorm:"not null"`
 	Price        float32 `json:"price"`
-	RestaurantsID uint    `json:"restaurantsID"`
+	RestaurantsID int    `json:"restaurantsID"`
 }
 
 type MenuItem struct {
-	ID           uint    `json:"ID"`
+	ID           int    `json:"ID"`
 	Name         string  `json:"name"`
 	Price        float32 `json:"price"`
-	RestaurantsID uint    `json:"restaurantsID"`
+	RestaurantsID int    `json:"restaurantsID"`
 }
 
 
@@ -51,3 +51,18 @@ func (s *ServiceDb) AddMenuItems(id int,item MenuItems) (MenuItem, error) {
 
 	return convertedItem, nil
 }
+
+
+func (s *ServiceDb) GetAllMenuItems(userId int) ([]MenuItem, error) {
+
+	var menuItems []MenuItems
+
+	result := s.DB.Where("restaurants_id = ?", userId).Find(&menuItems)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return Convert(menuItems), nil	
+}
+
+

@@ -7,7 +7,7 @@ type IServiceDb interface {
 	AddMenuItems(int, MenuItems) (MenuItem, error)
 	GetRestaurant(int) (Restaurant, error)
 	GetAllRestaurants() ([]Restaurant, error)
-	GetMenuItems(int) (MenuItems, error)
+	GetAllMenuItems(int) ([]MenuItem, error)
 }
 
 type ServiceDb struct {
@@ -18,3 +18,5 @@ type ServiceDb struct {
 func NewServiceDb(db *gorm.DB) *ServiceDb {
 	return &ServiceDb{DB: db}
 }
+
+// mockgen -source=model/DBServiceInit.go -destination=service_db_mock.go catalogService/model IServiceDb
